@@ -56,8 +56,11 @@ exports.getAllUser = async (req, res) => {
       if (Object.keys(item.timeTracking).length > 0) {
         for (let innerItem of Object.values(item.timeTracking)) {
           const { date, timeIn, timeOut } = innerItem.dataValues;
-          var duration = moment.duration(moment(timeOut).diff(moment(timeIn)));
+          var duration = moment.duration(
+            moment(timeOut != null ? timeOut : new Date()).diff(moment(timeIn))
+          );
           var hours = duration.asHours();
+
           const dateUnique = moment(date).format(format2);
           data[dateUnique]
             ? (data[dateUnique] += hours)
@@ -84,7 +87,6 @@ exports.getAllUser = async (req, res) => {
       error: false,
     });
   } catch (error) {
-    console.log("🚀 ~ exports.getAllUser= ~ error:", error)
     return res.status(500).json({
       status: true,
       message: INTERNAL_SERVER_ERROR,
